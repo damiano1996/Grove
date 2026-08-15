@@ -1,0 +1,37 @@
+# Configuration for release-drafter: https://github.com/release-drafter/release-drafter
+# Maintains a single draft release, populated from merged PRs since the last published release.
+# The draft's version/tag is a suggestion only - edit it manually in GitHub when publishing.
+
+name-template: 'v$RESOLVED_VERSION'
+tag-template: 'v$RESOLVED_VERSION'
+
+categories:
+  - title: '🚀 Features'
+    labels: [ 'enhancement' ]
+  - title: '🐛 Bug Fixes'
+    labels: [ 'bug' ]
+  - title: '📦 Dependencies'
+    labels: [ 'dependencies' ]
+  - title: '⚙️ CI / Build'
+    labels: [ 'github_actions', 'java' ]
+  - title: '📝 Documentation'
+    labels: [ 'documentation' ]
+
+change-template: '- $TITLE (#$NUMBER) @$AUTHOR'
+change-title-escapes: '\<*_&'
+exclude-labels:
+  - 'skip-changelog'
+
+version-resolver:
+  major:
+    labels: [ 'major' ]
+  minor:
+    labels: [ 'minor', 'enhancement' ]
+  patch:
+    labels: [ 'patch', 'bug', 'dependencies', 'documentation', 'github_actions', 'java' ]
+  default: patch
+
+template: |
+  ## What's Changed
+
+  $CHANGES
