@@ -1,7 +1,6 @@
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
-import org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask.FailureLevel
 
 plugins {
     id("org.jetbrains.kotlin.jvm") version "2.1.20"
@@ -80,26 +79,8 @@ intellijPlatform {
         ides {
             recommended()
         }
-
-        // ProjectOpener uses OpenProjectTask (com.intellij.ide.impl) to open worktrees in new
-        // windows - the only way to do this from a plugin, but the platform marks it @ApiStatus.Internal.
-        // ClaudeTerminalLauncher uses the createNewSession(workingDirectory, tabName, shellCommand, ...)
-        // overload, also marked @ApiStatus.Internal on this platform version.
-        // The verifier itself reports the plugin as "Compatible" in both cases.
-        failureLevel = setOf(
-            FailureLevel.COMPATIBILITY_WARNINGS,
-            FailureLevel.COMPATIBILITY_PROBLEMS,
-            FailureLevel.DEPRECATED_API_USAGES,
-            FailureLevel.SCHEDULED_FOR_REMOVAL_API_USAGES,
-            FailureLevel.EXPERIMENTAL_API_USAGES,
-            // INTERNAL_API_USAGES intentionally omitted
-            FailureLevel.OVERRIDE_ONLY_API_USAGES,
-            FailureLevel.NON_EXTENDABLE_API_USAGES,
-            FailureLevel.PLUGIN_STRUCTURE_WARNINGS,
-            FailureLevel.MISSING_DEPENDENCIES,
-            FailureLevel.INVALID_PLUGIN,
-            FailureLevel.NOT_DYNAMIC,
-        )
+        // Uses the platform's default (strict) failureLevel - no internal/experimental API usage
+        // to exempt; see git history if that changes again.
     }
 
     signing {

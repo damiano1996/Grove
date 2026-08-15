@@ -3,6 +3,8 @@ package com.github.damiano1996.jetbrains.grove.service
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindowManager
+import org.jetbrains.plugins.terminal.LocalTerminalDirectRunner
+import org.jetbrains.plugins.terminal.TerminalTabState
 import org.jetbrains.plugins.terminal.TerminalToolWindowManager
 import java.io.File
 
@@ -15,13 +17,13 @@ object ClaudeTerminalLauncher {
         ApplicationManager.getApplication().invokeLater {
             ToolWindowManager.getInstance(project).getToolWindow(TERMINAL_TOOL_WINDOW_ID)?.show()
 
-            TerminalToolWindowManager.getInstance(project).createNewSession(
-                workingDirectory.absolutePath,
-                tabName,
-                listOf("claude"),
-                true,
-                true,
-            )
+            val tabState = TerminalTabState()
+            tabState.myWorkingDirectory = workingDirectory.absolutePath
+            tabState.myShellCommand = listOf("claude")
+            tabState.myTabName = tabName
+            tabState.myIsUserDefinedTabTitle = true
+
+            TerminalToolWindowManager.getInstance(project).createNewSession(LocalTerminalDirectRunner(project), tabState)
         }
     }
 }
