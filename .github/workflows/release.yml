@@ -42,10 +42,16 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       # Set environment variables
+      # The plugin version is taken from the GitHub release tag (e.g. v1.2.3 -> 1.2.3), never
+      # from gradle.properties - it's overridden on the command line via -PpluginVersion below.
       - name: Export Properties
         id: properties
         shell: bash
         run: |
+          VERSION="${{ github.event.release.tag_name }}"
+          VERSION="${VERSION#v}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
           CHANGELOG="$(cat << 'EOM' | sed -e 's/^[[:space:]]*$//g' -e '/./,$!d'
           ${{ github.event.release.body }}
           EOM
@@ -61,7 +67,7 @@ jobs:
         env:
           CHANGELOG: ${{ steps.properties.outputs.changelog }}
         run: |
-          ./gradlew patchChangelog --release-note="$CHANGELOG"
+          ./gradlew patchChangelog -PpluginVersion="${{ steps.properties.outputs.version }}" --release-note="$CHANGELOG"
 
       # Publish the plugin to JetBrains Marketplace
       - name: Publish Plugin
@@ -70,7 +76,7 @@ jobs:
           CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
           PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
-        run: ./gradlew publishPlugin
+        run: ./gradlew publishPlugin -PpluginVersion="${{ steps.properties.outputs.version }}"
 
       # Upload artifact as a release asset
       - name: Upload Release Asset
