@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+## [0.1.1]
+
+### Fixed
+
+- Critical compatibility break on IntelliJ 2025.3+/2026.x: `OpenProjectTask`'s internal constructor
+  changed signature between platform versions, causing `NoSuchMethodError` on newer IDEs. Replaced
+  with the long-stable `ProjectUtil.openOrImport(String, Project?, Boolean)` overload.
+- Reverted `ClaudeTerminalLauncher` to the same non-internal `createNewSession(runner, tabState)`
+  overload InCoder already uses in production, instead of an internal-marked overload that was only
+  needed for a terminal-title-tracking approach since replaced by transcript-based title reading.
+
+## [0.1.0]
+
 ### Added
 
 - Tool window with a live dashboard of Grove sessions: branch, Claude's own AI-generated title, status
